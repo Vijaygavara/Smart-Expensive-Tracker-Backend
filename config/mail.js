@@ -55,3 +55,26 @@ export const sendPasswordEmail = async (
     `,
   });
 };
+
+export const sendForgotPasswordOtpEmail = async (email, otp) => {
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Reset Your Expense Tracker Password",
+    html: `
+      <h2>Expense Tracker - Password Reset</h2>
+
+      <p>You requested to reset your password.</p>
+
+      <p>Your password reset OTP is:</p>
+
+      <h1>${otp}</h1>
+
+      <p>This OTP will expire in 5 minutes.</p>
+
+      <p>If you did not request a password reset, please ignore this email.</p>
+
+      <p>Do not share this OTP with anyone.</p>
+    `,
+  });
+};

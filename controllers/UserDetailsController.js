@@ -2,7 +2,7 @@ import User from "../models/UserDetails.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { sendOtpEmail,sendPasswordEmail } from "../config/mail.js";
+import { sendForgotPasswordOtpEmail, sendOtpEmail,sendPasswordEmail } from "../config/mail.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -85,75 +85,6 @@ export const registerUser = async (req, res) => {
   }
 };
 
-
-// export const loginUser = async (req, res) => {
-//   try {
-//     const { email, password } = req.body;
-
-//     // Check user
-//     const user = await User.findOne({ email });
-
-//     if (!user) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid Email or Password",
-//       });
-//     }
-
-//     // Compare password
-//     const isMatch = await bcrypt.compare(
-//       password,
-//       user.password
-//     );
-
-//     if (!isMatch) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid Email or Password",
-//       });
-//     }
-
-//     // Create unique session ID
-//     const sessionId = uuidv4();
-
-//     // Store session ID in user
-//     user.sessionId = sessionId;
-//     await user.save();
-
-//     // Generate JWT
-//     const token = jwt.sign(
-//       {
-//         id: user._id,
-//         sessionId,
-//       },
-//       process.env.JWT_SECRET,
-//       {
-//         expiresIn: "1d",
-//       }
-//     );
-
-//     // Send response
-//     res.status(200).json({
-//       success: true,
-//       message: "Login Successful",
-//       token,
-//       user: {
-//         id: user._id,
-//         name: user.name,
-//         email: user.email,
-//       },
-//     });
-//   } catch (error) {
-//     console.log(error);
-
-//     res.status(500).json({
-//       success: false,
-//       message: "Server Error",
-//     });
-//   }
-// };
-
-
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -229,7 +160,6 @@ export const loginUser = async (req, res) => {
     });
   }
 };
-
 
 
 export const verifyOtp = async (req, res) => {
@@ -486,7 +416,7 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // Send OTP to user's email
-    await sendOtpEmail(user.email, otp);
+   await sendForgotPasswordOtpEmail(user.email, otp);
 
     // Generate temporary reset token
     const resetToken = jwt.sign(
